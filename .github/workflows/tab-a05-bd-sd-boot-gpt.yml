@@ -17,7 +17,9 @@ jobs:
       run: dd if=/dev/zero of=neo_sd_gpt_disk.img bs=1M count=10
 
     - name: Set up loopback device
-      run: sudo losetup /dev/loop0 neo_sd_gpt_disk.img
+      run: |
+        ls /dev/
+        sudo losetup /dev/loop0 neo_sd_gpt_disk.img
 
     - name: Create GPT partition table
       run: |
