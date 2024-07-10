@@ -1,88 +1,51 @@
 name: Create GPT Image
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up losetup dependencies
-      run: sudo apt-get update && sudo apt-get install -y util-linux
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y parted gdisk
 
-    - name: Create empty img file
-      run: dd if=/dev/zero of=neo_sd_gpt_disk.img bs=100M count=10
+      - name: Create GPT Image
+        run: |
+          # 1GBの空のイメージファイルを作成
+          dd if=/dev/zero of=custom_gpt.img bs=1M count=1024
 
-    - name: Set up loopback device
-      run: |
-        ls /dev/
-        losetup -f
-        sudo losetup /dev/loop3 neo_sd_gpt_disk.img
+          # ループバックデバイスに接続
+          LOOP_DEV=$(losetup --show -f custom_gpt.img)
 
-    - name: Create GPT partition table
-      run: |
-        sudo sgdisk --zap-all /dev/loop3
-        sudo sgdisk -n 1:0x4bf000:0x18c07df -t 1:8300 -c 1:"sd_extrastorage" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 2:0x10000:0x18000 -t 2:8300 -c 2:"sd_boot" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 3:0x18000:0x1c000 -t 3:8300 -c 3:"sd_logo" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 4:0x1c000:0x20000 -t 4:8300 -c 4:"sd_dtbo" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 5:0x20000:0x22800 -t 5:8300 -c 5:"sd_tee1" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 6:0x22800:0x25000 -t 6:8300 -c 6:"sd_tee2" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 7:0x25000:0x2aa00 -t 7:8300 -c 7:"sd_vbmeta" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 8:0x2aa00:0x3aa00 -t 8:8300 -c 8:"sd_nvdata" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 9:0x3aa00:0x3ea00 -t 9:8300 -c 9:"sd_nvcfg" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 10:0x3ea00:0x41200 -t 10:8300 -c 10:"sd_nvram" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 11:0x41200:0x46200 -t 11:8300 -c 11:"sd_expdb" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 12:0x46200:0x46400 -t 12:8300 -c 12:"sd_seccfg" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 13:0x46400:0x4dc00 -t 13:8300 -c 13:"sd_cam_vpu1" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 14:0x4dc00:0x55400 -t 14:8300 -c 14:"sd_cam_vpu2" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 15:0x55400:0x5cc00 -t 15:8300 -c 15:"sd_cam_vpu3" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 16:0x5cc00:0x5dc00 -t 16:8300 -c 16:"sd_kb" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 17:0x5dc00:0x5ec00 -t 17:8300 -c 17:"sd_dkb" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 18:0x5ec00:0x66c00 -t 18:8300 -c 18:"sd_factory" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 19:0x66c00:0x67000 -t 19:8300 -c 19:"sd_para" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 20:0x67000:0x77000 -t 20:8300 -c 20:"sd_metadata" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 21:0x77000:0x7f000 -t 21:8300 -c 21:"sd_recovery" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 22:0x7f000:0x2d7000 -t 22:8300 -c 22:"sd_system" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 23:0x2d7000:0x354000 -t 23:8300 -c 23:"sd_vendor" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 24:0x354000:0x384000 -t 24:8300 -c 24:"sd_cache" /dev/loop3
-        sudo partprobe /dev/loop3
-        sudo sgdisk -n 25:0x384000:0x13b000 -t 25:8300 -c 25:"sd_userdata" /dev/loop3
+          # パーティションテーブルを作成
+          parted ${LOOP_DEV} mklabel gpt
 
-    - name: Verify GPT partition table
-      run: sudo sgdisk -p /dev/loop3
+          # パーティションを作成（例としていくつかのパーティションを作成）
+          sgdisk -n 1:0x10000:0x17fff -t 1:8300 -c 1:"sd_boot" ${LOOP_DEV}
+          sgdisk -n 2:0x18000:0x1bfff -t 2:8300 -c 2:"sd_logo" ${LOOP_DEV}
+          sgdisk -n 3:0x1c000:0x1ffff -t 3:8300 -c 3:"sd_dtbo" ${LOOP_DEV}
+          sgdisk -n 4:0x20000:0x227ff -t 4:8300 -c 4:"sd_tee1" ${LOOP_DEV}
+          sgdisk -n 5:0x22800:0x24fff -t 5:8300 -c 5:"sd_tee2" ${LOOP_DEV}
+          sgdisk -n 6:0x25000:0x29fff -t 6:8300 -c 6:"sd_vbmeta" ${LOOP_DEV}
+          sgdisk -n 7:0x2aa00:0x3a9ff -t 7:8300 -c 7:"sd_nvdata" ${LOOP_DEV}
+          sgdisk -n 8:0x3aa00:0x3e9ff -t 8:8300 -c 8:"sd_nvcfg" ${LOOP_DEV}
+          sgdisk -n 9:0x3ea00:0x411ff -t 9:8300 -c 9:"sd_nvram" ${LOOP_DEV}
+          sgdisk -n 10:0x41200:0x461ff -t 10:8300 -c 10:"sd_expdb" ${LOOP_DEV}
 
-    - name: Detach loopback device
-      run: sudo losetup -d /dev/loop3
+          # ループバックデバイスをデタッチ
+          losetup -d ${LOOP_DEV}
 
-    - name: Upload img file
-      uses: actions/upload-artifact@v2
-      with:
-        name: neo_sd_gpt_disk.img
-        path: neo_sd_gpt_disk.img
+      - name: Upload GPT Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: custom_gpt.img
+          path: custom_gpt.img
