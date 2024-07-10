@@ -26,29 +26,53 @@ jobs:
       run: |
         sudo sgdisk --zap-all /dev/loop3
         sudo sgdisk -n 1:0x4bf000:0x18c07df -t 1:8300 -c 1:"sd_extrastorage" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 2:0x10000:0x18000 -t 2:8300 -c 2:"sd_boot" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 3:0x18000:0x1c000 -t 3:8300 -c 3:"sd_logo" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 4:0x1c000:0x20000 -t 4:8300 -c 4:"sd_dtbo" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 5:0x20000:0x22800 -t 5:8300 -c 5:"sd_tee1" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 6:0x22800:0x25000 -t 6:8300 -c 6:"sd_tee2" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 7:0x25000:0x2aa00 -t 7:8300 -c 7:"sd_vbmeta" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 8:0x2aa00:0x3aa00 -t 8:8300 -c 8:"sd_nvdata" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 9:0x3aa00:0x3ea00 -t 9:8300 -c 9:"sd_nvcfg" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 10:0x3ea00:0x41200 -t 10:8300 -c 10:"sd_nvram" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 11:0x41200:0x46200 -t 11:8300 -c 11:"sd_expdb" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 12:0x46200:0x46400 -t 12:8300 -c 12:"sd_seccfg" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 13:0x46400:0x4dc00 -t 13:8300 -c 13:"sd_cam_vpu1" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 14:0x4dc00:0x55400 -t 14:8300 -c 14:"sd_cam_vpu2" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 15:0x55400:0x5cc00 -t 15:8300 -c 15:"sd_cam_vpu3" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 16:0x5cc00:0x5dc00 -t 16:8300 -c 16:"sd_kb" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 17:0x5dc00:0x5ec00 -t 17:8300 -c 17:"sd_dkb" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 18:0x5ec00:0x66c00 -t 18:8300 -c 18:"sd_factory" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 19:0x66c00:0x67000 -t 19:8300 -c 19:"sd_para" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 20:0x67000:0x77000 -t 20:8300 -c 20:"sd_metadata" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 21:0x77000:0x7f000 -t 21:8300 -c 21:"sd_recovery" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 22:0x7f000:0x2d7000 -t 22:8300 -c 22:"sd_system" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 23:0x2d7000:0x354000 -t 23:8300 -c 23:"sd_vendor" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 24:0x354000:0x384000 -t 24:8300 -c 24:"sd_cache" /dev/loop3
+        sudo partprobe /dev/loop3
         sudo sgdisk -n 25:0x384000:0x13b000 -t 25:8300 -c 25:"sd_userdata" /dev/loop3
 
     - name: Verify GPT partition table
