@@ -31,15 +31,34 @@ jobs:
 
           # パーティションを作成（例としていくつかのパーティションを作成）
           sudo sgdisk -n 1:0x10000:0x17fff -t 1:8300 -c 1:"sd_boot" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 2:0x18000:0x1bfff -t 2:8300 -c 2:"sd_logo" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 3:0x1c000:0x1ffff -t 3:8300 -c 3:"sd_dtbo" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 4:0x20000:0x227ff -t 4:8300 -c 4:"sd_tee1" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 5:0x22800:0x24fff -t 5:8300 -c 5:"sd_tee2" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 6:0x25000:0x29fff -t 6:8300 -c 6:"sd_vbmeta" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 7:0x2aa00:0x3a9ff -t 7:8300 -c 7:"sd_nvdata" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 8:0x3aa00:0x3e9ff -t 8:8300 -c 8:"sd_nvcfg" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 9:0x3ea00:0x411ff -t 9:8300 -c 9:"sd_nvram" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
+
           sudo sgdisk -n 10:0x41200:0x461ff -t 10:8300 -c 10:"sd_expdb" ${LOOP_DEV}
+          sudo partprobe ${LOOP_DEV}
 
           # ループバックデバイスをデタッチ
           sudo losetup -d ${LOOP_DEV}
