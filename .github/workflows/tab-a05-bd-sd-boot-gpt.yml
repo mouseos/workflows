@@ -108,8 +108,12 @@ jobs:
           # ループバックデバイスをデタッチ
           sudo losetup -d ${LOOP_DEV}
 
-      - name: Upload GPT Image
+      - name: Compress GPT Image
+        run: |
+          gzip -c custom_gpt.img > custom_gpt.img.gz
+
+      - name: Upload Compressed GPT Image
         uses: actions/upload-artifact@v3
         with:
-          name: custom_gpt.img
-          path: custom_gpt.img
+          name: custom_gpt.img.gz
+          path: custom_gpt.img.gz
