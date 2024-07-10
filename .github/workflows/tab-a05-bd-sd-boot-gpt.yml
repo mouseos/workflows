@@ -14,7 +14,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y util-linux
 
     - name: Create empty img file
-      run: dd if=/dev/zero of=neo_sd_gpt_disk.img bs=1M count=10
+      run: dd if=/dev/zero of=neo_sd_gpt_disk.img bs=100M count=10
 
     - name: Set up loopback device
       run: |
