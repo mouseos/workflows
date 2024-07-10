@@ -19,6 +19,7 @@ jobs:
     - name: Set up loopback device
       run: |
         ls /dev/
+        losetup -f
         sudo losetup /dev/loop0 neo_sd_gpt_disk.img
 
     - name: Create GPT partition table
