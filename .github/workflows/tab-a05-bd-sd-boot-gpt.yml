@@ -20,8 +20,8 @@ jobs:
 
       - name: Create GPT Image
         run: |
-          # 1GBの空のイメージファイルを作成
-          dd if=/dev/zero of=custom_gpt.img bs=1M count=1024
+          # 16GBの空のイメージファイルを作成
+          dd if=/dev/zero of=custom_gpt.img bs=16M count=1024
 
           # ループバックデバイスに接続
           LOOP_DEV=$(sudo losetup --show -f custom_gpt.img)
@@ -29,36 +29,81 @@ jobs:
           # パーティションテーブルを作成
           sudo parted ${LOOP_DEV} mklabel gpt
 
-          # パーティションを作成（例としていくつかのパーティションを作成）
+          # パーティションを作成し、それぞれに名前を付ける
           sudo parted ${LOOP_DEV} mkpart primary ext4 1MiB 128MiB
           sudo parted ${LOOP_DEV} name 1 sd_boot
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 129MiB 256MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 129MiB 192MiB
           sudo parted ${LOOP_DEV} name 2 sd_logo
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 257MiB 384MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 193MiB 256MiB
           sudo parted ${LOOP_DEV} name 3 sd_dtbo
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 385MiB 512MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 257MiB 289MiB
           sudo parted ${LOOP_DEV} name 4 sd_tee1
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 513MiB 640MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 290MiB 322MiB
           sudo parted ${LOOP_DEV} name 5 sd_tee2
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 641MiB 768MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 323MiB 351MiB
           sudo parted ${LOOP_DEV} name 6 sd_vbmeta
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 769MiB 896MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 352MiB 481MiB
           sudo parted ${LOOP_DEV} name 7 sd_nvdata
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 897MiB 1024MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 482MiB 513MiB
           sudo parted ${LOOP_DEV} name 8 sd_nvcfg
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 1025MiB 1152MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 514MiB 545MiB
           sudo parted ${LOOP_DEV} name 9 sd_nvram
 
-          sudo parted ${LOOP_DEV} mkpart primary ext4 1153MiB 1280MiB
+          sudo parted ${LOOP_DEV} mkpart primary ext4 546MiB 577MiB
           sudo parted ${LOOP_DEV} name 10 sd_expdb
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 578MiB 578.5MiB
+          sudo parted ${LOOP_DEV} name 11 sd_seccfg
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 578.5MiB 608.5MiB
+          sudo parted ${LOOP_DEV} name 12 sd_cam_vpu1
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 608.5MiB 638.5MiB
+          sudo parted ${LOOP_DEV} name 13 sd_cam_vpu2
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 638.5MiB 668.5MiB
+          sudo parted ${LOOP_DEV} name 14 sd_cam_vpu3
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 668.5MiB 672.5MiB
+          sudo parted ${LOOP_DEV} name 15 sd_kb
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 672.5MiB 676.5MiB
+          sudo parted ${LOOP_DEV} name 16 sd_dkb
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 676.5MiB 708.5MiB
+          sudo parted ${LOOP_DEV} name 17 sd_factory
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 708.5MiB 708.9MiB
+          sudo parted ${LOOP_DEV} name 18 sd_para
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 708.9MiB 836.9MiB
+          sudo parted ${LOOP_DEV} name 19 sd_metadata
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 836.9MiB 900.9MiB
+          sudo parted ${LOOP_DEV} name 20 sd_recovery
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 900.9MiB 1632.9MiB
+          sudo parted ${LOOP_DEV} name 21 sd_system
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 1632.9MiB 1952.9MiB
+          sudo parted ${LOOP_DEV} name 22 sd_vendor
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 1952.9MiB 2304.9MiB
+          sudo parted ${LOOP_DEV} name 23 sd_cache
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 2304.9MiB 3656.9MiB
+          sudo parted ${LOOP_DEV} name 24 sd_userdata
+
+          sudo parted ${LOOP_DEV} mkpart primary ext4 3656.9MiB 7202.9MiB
+          sudo parted ${LOOP_DEV} name 25 sd_extrastorage
 
           # ループバックデバイスをデタッチ
           sudo losetup -d ${LOOP_DEV}
